@@ -1,14 +1,12 @@
 import React from 'react';
 import { ContactsItem } from '../ContactsItem/ContactsItem.jsx';
 import s from './ContactsList.module.css'
+import { useSelector } from 'react-redux';
 
-export const ContactsList = ({
-  contacts,
-  getFilteredData,
-  children,
-  deleteContact,
-}) => {
-  const filteredContacts = getFilteredData(contacts);
+export const ContactsList = ({children}) => {
+  const contacts = useSelector(state => state.phonebook.contacts);
+  const filter = useSelector( state => state.phonebook.filter);
+  const filteredContacts = contacts.filter(contact => contact.name.toLowerCase().includes(filter?.toLowerCase() || ''))
 
   return (
     <>
@@ -23,8 +21,7 @@ export const ContactsList = ({
               id={id}
               name={name}
               number={number}
-              deleteContact={deleteContact}
-            />
+              />
           ))}
         </ul>
       )}

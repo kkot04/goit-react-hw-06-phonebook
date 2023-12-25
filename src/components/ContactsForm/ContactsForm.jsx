@@ -1,47 +1,30 @@
-import { useState } from 'react';
-import { nanoid } from 'nanoid';
+import { useDispatch, useSelector } from 'react-redux';
 import s from './ContactsForm.module.css';
+import { addContact } from 'store/Slice';
 
-export const ContactsForm = ({ contacts, newContactState }) => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-
-  const handleValueChange = event => {
-    const { name, value } = event.currentTarget;
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-      case 'number':
-        setNumber(value);
-        break;
-      default:
-        return;
-    }
-  };
+export const ContactsForm = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector(state => state.phonebook.contacts)
 
   const createContact = event => {
     event.preventDefault();
 
-    const newContact = { name, number, id: nanoid() };
+    const name = event.target.elements.name.value;
+    const number = event.target.elements.number.value
 
     if (contacts.some(contact => contact.name === name)) {
       alert(`Contact with the name ${name} already exists!`);
       return;
     }
 
-    newContactState(newContact);
-
-    setName('');
-    setNumber('');
+    dispatch(addContact({name, number}))
+    event.target.reset()
   };
 
   return (
     <form className={s.formBox} autoComplete="off" onSubmit={createContact}>
       <input
         className={s.input}
-        value={name}
-        onChange={handleValueChange}
         type="text"
         name="name"
         placeholder="Contact name"
@@ -49,8 +32,6 @@ export const ContactsForm = ({ contacts, newContactState }) => {
 
       <input
         className={s.input}
-        onChange={handleValueChange}
-        value={number}
         type="tel"
         name="number"
         placeholder="Phone number"
